@@ -1,6 +1,6 @@
 package com.example.biddora_backend.dto.productDtos;
 
-import com.example.biddora_backend.dto.UserDto;
+import com.example.biddora_backend.dto.userDtos.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

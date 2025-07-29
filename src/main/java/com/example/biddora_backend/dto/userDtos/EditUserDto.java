@@ -1,4 +1,4 @@
-package com.example.biddora_backend.dto;
+package com.example.biddora_backend.dto.userDtos;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -6,10 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Setter
-public class UserDto {
-    private String username;
+public class EditUserDto {
     private String email;
 }

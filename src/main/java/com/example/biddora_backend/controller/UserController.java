@@ -1,7 +1,7 @@
 package com.example.biddora_backend.controller;
 
-import com.example.biddora_backend.dto.EditUserDto;
-import com.example.biddora_backend.dto.UserDto;
+import com.example.biddora_backend.dto.userDtos.EditUserDto;
+import com.example.biddora_backend.dto.userDtos.UserDto;
 import com.example.biddora_backend.entity.User;
 import com.example.biddora_backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

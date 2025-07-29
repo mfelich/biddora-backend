@@ -1,7 +1,7 @@
 package com.example.biddora_backend.service.impl;
 
-import com.example.biddora_backend.dto.EditUserDto;
-import com.example.biddora_backend.dto.UserDto;
+import com.example.biddora_backend.dto.userDtos.EditUserDto;
+import com.example.biddora_backend.dto.userDtos.UserDto;
 import com.example.biddora_backend.entity.Role;
 import com.example.biddora_backend.entity.User;
 import com.example.biddora_backend.mapper.UserMapper;
@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
