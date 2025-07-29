@@ -1,0 +1,18 @@
+package com.example.biddora_backend.dto;
+
+import com.example.biddora_backend.dto.productDtos.ProductDto;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class AuctionWinnerDto {
+    private Long id;
+    private UserDto user;
+    private ProductDto productDto;
+    private Long amount;
+}
