@@ -12,18 +12,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
 
     private UserRepo userRepo;
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
     private UserMapper userMapper;
     private EntityFetcher entityFetcher;
 
@@ -61,23 +58,7 @@ public class UserServiceImpl implements UserService {
                 userDtos = userRepo.findAll(pageRequest);
             }
 
-
         return userDtos.map(userMapper::mapToDto);
-    }
-
-    //Create user
-    @Override
-    public UserDto createUser(User user) {
-        User newUser = new User();
-        newUser.setEmail(user.getEmail());
-        newUser.setRegistrationDate(LocalDateTime.now());
-        newUser.setPassword(encoder.encode(user.getPassword()));
-        newUser.setRole(Role.USER);
-        newUser.setUsername(user.getUsername());
-
-        User savedUser = userRepo.save(newUser);
-
-        return userMapper.mapToDto(savedUser);
     }
 
     //Edit user

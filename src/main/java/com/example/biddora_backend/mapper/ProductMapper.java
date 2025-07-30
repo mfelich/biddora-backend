@@ -16,6 +16,6 @@ public class ProductMapper {
     }
 
     public ProductDto mapToDto(Product product){
-        return new ProductDto(product.getName(), product.getStartingPrice(), product.getStartTime(),product.getEndTime(),userMapper.mapToDto(product.getUser()));
+        return new ProductDto(product.getId(), product.getName(), product.getStartingPrice(), product.getStartTime(),product.getEndTime(),userMapper.mapToDto(product.getUser()));
     }
 }

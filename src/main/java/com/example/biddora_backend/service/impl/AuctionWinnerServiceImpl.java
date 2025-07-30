@@ -9,7 +9,6 @@ import com.example.biddora_backend.mapper.AuctionWinnerMapper;
 import com.example.biddora_backend.repo.AuctionWinnerRepo;
 import com.example.biddora_backend.repo.BidRepo;
 import com.example.biddora_backend.service.AuctionWinnerService;
-import com.example.biddora_backend.service.EmailService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,15 +23,13 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
     private BidRepo bidRepo;
     private EntityFetcher entityFetcher;
     private AuctionWinnerMapper auctionWinnerMapper;
-    private EmailService emailService;
 
     @Autowired
-    public AuctionWinnerServiceImpl(AuctionWinnerRepo auctionWinnerRepo,BidRepo bidRepo,AuctionWinnerMapper auctionWinnerMapper,EntityFetcher entityFetcher,EmailService emailService) {
+    public AuctionWinnerServiceImpl(AuctionWinnerRepo auctionWinnerRepo,BidRepo bidRepo,AuctionWinnerMapper auctionWinnerMapper,EntityFetcher entityFetcher) {
         this.auctionWinnerRepo=auctionWinnerRepo;
         this.bidRepo=bidRepo;
         this.auctionWinnerMapper=auctionWinnerMapper;
         this.entityFetcher=entityFetcher;
-        this.emailService=emailService;
     }
 
     @Override
@@ -54,13 +51,6 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
 
         //saved winner
         AuctionWinner savedAuctionWinner = auctionWinnerRepo.save(auctionWinner);
-
-        //Sending email to user who won auction for certain product
-        try {
-            emailService.sendAuctionWinnerHtmlEmail(savedAuctionWinner);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
 
         return savedAuctionWinner;
     }

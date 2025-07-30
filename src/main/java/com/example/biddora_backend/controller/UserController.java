@@ -25,14 +25,6 @@ public class UserController {
         this.userService=userService;
     }
 
-
-    @PostMapping("/register")
-    ResponseEntity<UserDto> createUser(@RequestBody User user) {
-        UserDto userDto = userService.createUser(user);
-
-        return new ResponseEntity<>(userDto, HttpStatus.CREATED);
-    }
-
     //Edit user
     @PreAuthorize("hasRole('USER')")
     @PutMapping
@@ -59,7 +51,6 @@ public class UserController {
 
         return ResponseEntity.ok(userDtos);
     }
-
 
     //Delete user by id
     @DeleteMapping("/{id}")

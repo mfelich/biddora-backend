@@ -11,7 +11,6 @@ import java.util.Optional;
 public interface UserService {
     UserDto getUser(Long userId);
     Page<UserDto> getAllUsers(Optional<Integer> page, Optional<String> sortBy,Optional<String> username);
-    UserDto createUser(User user);
     UserDto editUser(EditUserDto editUserDto);
     String deleteUser(Long id) throws AccessDeniedException;
 }
