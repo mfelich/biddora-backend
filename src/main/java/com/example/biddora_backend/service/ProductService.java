@@ -17,4 +17,6 @@ public interface    ProductService {
     Page<ProductDto> getAllProducts(Optional<Integer> page, Optional<String> sortBy, Optional<String> name, Optional<ProductStatus> productType);
     ProductDto editProduct(Long productId, EditProductDto editProductDto) throws AccessDeniedException;
     String deleteProduct(Long productId) throws AccessDeniedException;
+    void openScheduledAuctions();
+    void closeExpiredAuctions();
 }

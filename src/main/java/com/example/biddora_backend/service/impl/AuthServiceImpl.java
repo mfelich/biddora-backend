@@ -12,6 +12,7 @@ import com.example.biddora_backend.repo.UserRepo;
 import com.example.biddora_backend.service.AuthService;
 import com.example.biddora_backend.service.security.JWTService;
 import com.example.biddora_backend.service.util.EntityFetcher;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -72,7 +73,6 @@ public class AuthServiceImpl implements AuthService {
 
         User user = entityFetcher.findUserByUsername(authRequest.getUsername());
 
-        //popraviti da se ne salje username nego email
         String token = jwtService.generateToken(user.getUsername());
 
         String role = authentication.getAuthorities().stream().findFirst().map(GrantedAuthority::getAuthority).orElse("ROLE_USER");

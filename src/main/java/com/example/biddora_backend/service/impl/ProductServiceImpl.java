@@ -10,6 +10,7 @@ import com.example.biddora_backend.entity.User;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.mapper.ProductMapper;
 import com.example.biddora_backend.repo.ProductRepo;
+import com.example.biddora_backend.service.AuctionWinnerService;
 import com.example.biddora_backend.service.ProductService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -29,11 +31,13 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepo productRepo;
+    private final AuctionWinnerService auctionWinnerService;
     private final ProductMapper productMapper;
     private final EntityFetcher entityFetcher;
 
-    public ProductServiceImpl(ProductRepo productRepo, EntityFetcher entityFetcher, ProductMapper productMapper) {
+    public ProductServiceImpl(ProductRepo productRepo,AuctionWinnerService auctionWinnerService, EntityFetcher entityFetcher, ProductMapper productMapper) {
         this.productRepo = productRepo;
+        this.auctionWinnerService=auctionWinnerService;
         this.entityFetcher = entityFetcher;
         this.productMapper = productMapper;
     }
@@ -156,5 +160,32 @@ public class ProductServiceImpl implements ProductService {
 
         productRepo.delete(product);
         return "Product deleted successfully!";
+    }
+
+    @Override
+    @Transactional
+    public void openScheduledAuctions() {
+        List<Product> toOpen = productRepo.findByProductStatusAndStartTimeLessThanEqual(ProductStatus.SCHEDULED, LocalDateTime.now());
+        toOpen.forEach(p -> p.setProductStatus(ProductStatus.OPEN));
+        productRepo.saveAll(toOpen);
+    }
+
+    @Override
+    @Transactional
+    public void closeExpiredAuctions() {
+        List<Product> toClose = productRepo.findByProductStatusAndEndTimeLessThanEqual(ProductStatus.OPEN, LocalDateTime.now());
+        List<Product> allToSave = new ArrayList<>();
+
+        toClose.forEach(p -> {
+            try {
+                p.setAuctionWinner(auctionWinnerService.createWinner(p));
+                p.setProductStatus(ProductStatus.CLOSED);
+                allToSave.add(p);
+            } catch (Exception e) {
+                System.err.println("Greška kod kreiranja pobjednika za proizvod id=" + p.getId() + ": " + e.getMessage());
+            }
+        });
+
+        productRepo.saveAll(allToSave);
     }
 }
