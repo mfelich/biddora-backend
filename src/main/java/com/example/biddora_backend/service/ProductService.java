@@ -14,7 +14,7 @@ public interface    ProductService {
     ProductDto addProduct(CreateProductDto createProductDto) throws Exception;
     ProductDto getProductById(Long productId);
     List<ProductDto> getProductsByUser(Long userId);
-    Page<ProductDto> getALlProducts(Optional<Integer> page, Optional<String> sortBy, Optional<String> name, Optional<ProductStatus> productType);
+    Page<ProductDto> getAllProducts(Optional<Integer> page, Optional<String> sortBy, Optional<String> name, Optional<ProductStatus> productType);
     ProductDto editProduct(Long productId, EditProductDto editProductDto) throws AccessDeniedException;
     String deleteProduct(Long productId) throws AccessDeniedException;
 }

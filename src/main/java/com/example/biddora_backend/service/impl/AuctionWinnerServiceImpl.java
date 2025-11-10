@@ -5,11 +5,13 @@ import com.example.biddora_backend.entity.AuctionWinner;
 import com.example.biddora_backend.entity.Bid;
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
+import com.example.biddora_backend.exception.AuctionNotEndedException;
 import com.example.biddora_backend.mapper.AuctionWinnerMapper;
 import com.example.biddora_backend.repo.AuctionWinnerRepo;
 import com.example.biddora_backend.repo.BidRepo;
 import com.example.biddora_backend.service.AuctionWinnerService;
 import com.example.biddora_backend.service.util.EntityFetcher;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +33,7 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
     }
 
     @Override
+    @Transactional
     public AuctionWinner createWinner(Product product) {
 
         Optional<Bid> winningBidOpt = bidRepo.findTopByProductOrderByAmountDesc(product);
@@ -59,7 +62,7 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
         Product product = entityFetcher.getProductById(productId);
 
         if (!product.getProductStatus().equals(ProductStatus.CLOSED)) {
-            throw new RuntimeException("This auction is not over yet.");
+            throw new AuctionNotEndedException("This auction is not over yet.");
         }
 
         AuctionWinner auctionWinner = auctionWinnerRepo.findByProductId(productId);

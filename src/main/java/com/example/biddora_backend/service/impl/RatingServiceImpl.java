@@ -12,6 +12,7 @@ import com.example.biddora_backend.mapper.RatingMapper;
 import com.example.biddora_backend.repo.RatingRepo;
 import com.example.biddora_backend.service.RatingService;
 import com.example.biddora_backend.service.util.EntityFetcher;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +56,7 @@ public class RatingServiceImpl implements RatingService {
 
 
     @Override
+    @Transactional
     public void deleteRating(Long ratingId) throws AccessDeniedException{
         User user = entityFetcher.getCurrentUser();
         Rating rating = getRatingById(ratingId);
@@ -66,6 +68,7 @@ public class RatingServiceImpl implements RatingService {
     }
 
     @Override
+    @Transactional
     public RatingDto updateRating(Long ratingId, UpdateRatingDto updateRatingDto) throws AccessDeniedException{
         User user = entityFetcher.getCurrentUser();
         Rating rating = getRatingById(ratingId);
@@ -110,6 +113,6 @@ public class RatingServiceImpl implements RatingService {
 
     private Rating getRatingById(Long ratingId){
         return ratingRepo.findById(ratingId)
-                .orElseThrow(() ->  new AccountException("Rating does not exist with id:" + ratingId));
+                .orElseThrow(() ->  new ResourceNotFoundException("Rating does not exist with id:" + ratingId));
     }
 }

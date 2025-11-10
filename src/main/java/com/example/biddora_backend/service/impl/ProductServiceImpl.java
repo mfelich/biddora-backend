@@ -12,6 +12,7 @@ import com.example.biddora_backend.mapper.ProductMapper;
 import com.example.biddora_backend.repo.ProductRepo;
 import com.example.biddora_backend.service.ProductService;
 import com.example.biddora_backend.service.util.EntityFetcher;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
 
     //Create product
     @Override
+    @Transactional
     public ProductDto addProduct(CreateProductDto createProductDto) throws Exception {
 
         if (!createProductDto.getEndTime().isAfter(createProductDto.getStartTime())) {
@@ -76,14 +78,14 @@ public class ProductServiceImpl implements ProductService {
         List<Product> products = productRepo.findAllByUserId(user.getId());
 
         if (products.isEmpty()) {
-            throw new ResourceNotFoundException("This user has no posted products!");
+            throw new ResourceNotFoundException("This user has no products!");
         }
 
         return products.stream().map(productMapper::mapToDto).collect(Collectors.toList());
     }
 
     @Override
-    public Page<ProductDto> getALlProducts(Optional<Integer> page, Optional<String> sortBy, Optional<String> name, Optional<ProductStatus> productType) {
+    public Page<ProductDto> getAllProducts(Optional<Integer> page, Optional<String> sortBy, Optional<String> name, Optional<ProductStatus> productType) {
         String sortField = sortBy.orElse("name");
         Sort.Direction direction = Sort.Direction.ASC;
 
@@ -111,7 +113,6 @@ public class ProductServiceImpl implements ProductService {
                     name.get(), productType.get(), pageRequest
             );
         } else if (name.isPresent()) {
-
             products = productRepo.findByNameContainingIgnoreCase(name.get(), pageRequest);
         } else if (productType.isPresent()) {
             products = productRepo.findByProductStatus(productType.get(), pageRequest);
@@ -125,6 +126,7 @@ public class ProductServiceImpl implements ProductService {
 
     //Edit product by id (ADMIN cannot edit product)
     @Override
+    @Transactional
     public ProductDto editProduct(Long productId, EditProductDto editProductDto) throws AccessDeniedException {
         User user = entityFetcher.getCurrentUser();
         Product product = entityFetcher.getProductById(productId);
@@ -142,6 +144,7 @@ public class ProductServiceImpl implements ProductService {
 
     //Delete product by id (ADMIN can also delete everyones product)
     @Override
+    @Transactional
     public String deleteProduct(Long productId) throws AccessDeniedException {
         User user = entityFetcher.getCurrentUser();
         Product product = entityFetcher.getProductById(productId);

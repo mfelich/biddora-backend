@@ -46,7 +46,7 @@ public class ProductController {
             @RequestParam Optional<String> name,
             @RequestParam Optional<ProductStatus> productType) {
 
-        Page<ProductDto> products = productService.getALlProducts(page, sortBy, name, productType);
+        Page<ProductDto> products = productService.getAllProducts(page, sortBy, name, productType);
         return ResponseEntity.ok(products);
     }
 

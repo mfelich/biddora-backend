@@ -144,4 +144,17 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errorDetails, exception.getStatusCode());
     }
+
+    @ExceptionHandler(AuctionNotEndedException.class)
+    public ResponseEntity<?> handleAuctionNotEndedException(ResponseStatusException exception,
+                                                            WebRequest webRequest) {
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "AUCTION_NOT_ENDED"
+        );
+
+        return ResponseEntity.ok(errorDetails);
+    }
 }

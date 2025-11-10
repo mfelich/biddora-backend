@@ -4,7 +4,7 @@ import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
 import com.example.biddora_backend.repo.ProductRepo;
 import com.example.biddora_backend.service.AuctionWinnerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +22,25 @@ public class AuctionStatusScheduler {
         this.auctionWinnerService=auctionWinnerService;
     }
 
-    @Scheduled(fixedRate = 60_000)
+    @Scheduled(cron = "1 * * * * *")
+    @Transactional
     public void updateProductStatus(){
 
         LocalDateTime now = LocalDateTime.now();
 
+        // Open auctions
         List<Product> toOpen = productRepo.findByProductStatusAndStartTimeLessThanEqual(ProductStatus.SCHEDULED, now);
         toOpen.forEach(p -> p.setProductStatus(ProductStatus.OPEN));
 
-        //Zatvori proizvode koji su "open" i endTime <= now i kreiraj AuctionWinner preko servisa
+        // Close auctions
         List<Product> toClose = productRepo.findByProductStatusAndEndTimeLessThanEqual(ProductStatus.OPEN, now);
-        toClose.forEach(p -> p.setProductStatus(ProductStatus.CLOSED));
-        productRepo.saveAll(toClose);
-        toClose.forEach(p -> p.setAuctionWinner(auctionWinnerService.createWinner(p)));
-        productRepo.saveAll(toOpen);
+        toClose.forEach(p -> {
+            p.setProductStatus(ProductStatus.CLOSED);
+            p.setAuctionWinner(auctionWinnerService.createWinner(p));
+        });
 
+        // Save
+        productRepo.saveAll(toOpen);
+        productRepo.saveAll(toClose);
     }
 }
