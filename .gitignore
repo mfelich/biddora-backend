@@ -1,0 +1,24 @@
+﻿# Maven
+target/
+*.log
+*.class
+*.jar
+*.war
+*.ear
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+out/
+
+# OS fajlovi
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+*.properties
+*.env
+
+# Others
+*.swp

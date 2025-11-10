@@ -1,0 +1,81 @@
+package com.example.biddora_backend.service.impl;
+
+import com.example.biddora_backend.dto.favoriteDtos.CreateFavoriteDto;
+import com.example.biddora_backend.dto.favoriteDtos.FavoriteDto;
+import com.example.biddora_backend.entity.Favorite;
+import com.example.biddora_backend.entity.User;
+import com.example.biddora_backend.exception.AlreadyExistsException;
+import com.example.biddora_backend.exception.ResourceNotFoundException;
+import com.example.biddora_backend.mapper.FavoriteMapper;
+import com.example.biddora_backend.repo.FavoriteRepo;
+import com.example.biddora_backend.service.FavoriteService;
+import com.example.biddora_backend.service.util.EntityFetcher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class FavoriteServiceImpl implements FavoriteService {
+
+    private FavoriteRepo favoriteRepo;
+    private FavoriteMapper favoriteMapper;
+    private EntityFetcher entityFetcher;
+
+    public FavoriteServiceImpl(FavoriteRepo favoriteRepo,FavoriteMapper favoriteMapper, EntityFetcher entityFetcher) {
+        this.favoriteRepo=favoriteRepo;
+        this.favoriteMapper=favoriteMapper;
+        this.entityFetcher=entityFetcher;
+    }
+
+    @Override
+    public List<FavoriteDto> getFavorites() {
+        User user = entityFetcher.getCurrentUser();
+
+        List<Favorite> favorites = favoriteRepo.findByUserId(user.getId());
+
+        return favorites
+                .stream()
+                .map(favoriteMapper::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+
+
+    @Override
+    public FavoriteDto addToFavorite(CreateFavoriteDto createFavoriteDto) {
+
+        User user = entityFetcher.getCurrentUser();
+
+        Optional<Favorite> favorite = favoriteRepo.findByUserIdAndProductId(user.getId(), createFavoriteDto.getProductId());
+
+        if (!favorite.isEmpty()) {
+            throw new AlreadyExistsException("This product is in your favorites already.");
+        }
+
+        Favorite newFavorite = new Favorite();
+        newFavorite.setUser(user);
+        newFavorite.setProduct(entityFetcher.getProductById(createFavoriteDto.getProductId()));
+
+        FavoriteDto savedFavorite = favoriteMapper.mapToDto(favoriteRepo.save(newFavorite));
+
+        return savedFavorite;
+    }
+
+    @Override
+    public void removeFavorite(Long productId) {
+        User user = entityFetcher.getCurrentUser();
+
+        Favorite favorite = favoriteRepo.findByUserIdAndProductId(user.getId(), productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Favorite with productId:" + productId + " not found!"));
+
+        favoriteRepo.delete(favorite);
+    }
+
+    @Override
+    public Long countUserFavorites(Long userId) {
+        return favoriteRepo.countByUserId(userId);
+    }
+}

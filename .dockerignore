@@ -1,0 +1,23 @@
+target/*
+!target/biddora-backend.jar
+
+# IDE files
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+
+# Sistem files
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Git folders
+.git
+.gitignore
+
+# Maven wrapper
+.mvn/
