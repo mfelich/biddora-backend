@@ -17,13 +17,8 @@ import java.util.Optional;
 @CrossOrigin(value = "http://localhost:5174")
 public class BidController {
 
-
-    public BidService bidService;
-
     @Autowired
-    public BidController(BidService bidService) {
-        this.bidService=bidService;
-    }
+    public BidService bidService;
 
     @PostMapping
     ResponseEntity<BidDto> placeBid(@Valid @RequestBody CreateBidDto createBidDto) throws AccessDeniedException {

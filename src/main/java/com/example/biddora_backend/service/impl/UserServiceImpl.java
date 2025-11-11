@@ -8,7 +8,6 @@ import com.example.biddora_backend.mapper.UserMapper;
 import com.example.biddora_backend.repo.UserRepo;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import com.example.biddora_backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

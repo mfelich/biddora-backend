@@ -4,6 +4,7 @@ import com.example.biddora_backend.dto.ratingDtos.CreateRatingDto;
 import com.example.biddora_backend.dto.ratingDtos.RatingDto;
 import com.example.biddora_backend.dto.ratingDtos.UpdateRatingDto;
 import com.example.biddora_backend.service.RatingService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,12 +16,8 @@ import java.util.List;
 @RequestMapping("/api/ratings")
 public class RatingController {
 
-
-    private final RatingService ratingService;
-
-    public RatingController(RatingService ratingService) {
-        this.ratingService=ratingService;
-    }
+    @Autowired
+    private RatingService ratingService;
 
     @PostMapping
     ResponseEntity<RatingDto> createRating(@RequestBody CreateRatingDto createRatingDto) {

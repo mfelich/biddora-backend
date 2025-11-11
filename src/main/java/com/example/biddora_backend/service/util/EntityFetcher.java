@@ -15,7 +15,6 @@ public class EntityFetcher {
     private UserRepo userRepo;
     private ProductRepo productRepo;
 
-    @Autowired
     public EntityFetcher(UserRepo userRepo, ProductRepo productRepo) {
         this.userRepo=userRepo;
         this.productRepo=productRepo;

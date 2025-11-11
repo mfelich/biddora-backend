@@ -18,11 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 public class SocketConnectionHandler extends TextWebSocketHandler {
 
-    // Mapiranje sesija po productId
     private final Map<Long, List<WebSocketSession>> sessionsByProduct = new ConcurrentHashMap<>();
     private final ObjectMapper objectMapper;
 
-    // Konstruktor injektuje Springov ObjectMapper
     public SocketConnectionHandler(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
@@ -30,14 +28,13 @@ public class SocketConnectionHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         System.out.println(session.getId() + " Connected");
-        // Čekamo da frontend pošalje productId
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         Long productId = objectMapper.readTree(message.getPayload()).get("productId").asLong();
 
-        // Registrujemo sesiju za taj productId
+        // Register session for productId
         List<WebSocketSession> sessions = sessionsByProduct
                 .computeIfAbsent(productId, k -> Collections.synchronizedList(new ArrayList<>()));
 
