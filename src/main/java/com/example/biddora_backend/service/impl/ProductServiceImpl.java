@@ -7,6 +7,7 @@ import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
 import com.example.biddora_backend.entity.Role;
 import com.example.biddora_backend.entity.User;
+import com.example.biddora_backend.exception.BadRequestException;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.mapper.ProductMapper;
 import com.example.biddora_backend.repo.ProductRepo;
@@ -47,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto addProduct(CreateProductDto createProductDto) throws Exception {
 
         if (!createProductDto.getEndTime().isAfter(createProductDto.getStartTime())) {
-            throw new Exception("End time must be after start time!");
+            throw new BadRequestException("End time must be after start time!");
         }
 
         User user = entityFetcher.getCurrentUser();

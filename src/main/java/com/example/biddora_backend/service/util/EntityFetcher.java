@@ -3,6 +3,7 @@ package com.example.biddora_backend.service.util;
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.User;
 import com.example.biddora_backend.exception.AccountException;
+import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.repo.ProductRepo;
 import com.example.biddora_backend.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ public class EntityFetcher {
 
     public User getUserById(Long id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new AccountException("User not found!"));
+                .orElseThrow(() -> new AccountException("User not found with id:" + id));
     }
 
     public User findUserByUsername(String username) {
@@ -32,7 +33,6 @@ public class EntityFetcher {
     public User getCurrentUser(){
         String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
         return findUserByUsername(currentUsername);
-
     }
 
     public boolean existsByUsername(String username){
@@ -45,7 +45,7 @@ public class EntityFetcher {
 
     public Product getProductById(Long productId){
         Product product = productRepo.findById(productId)
-                .orElseThrow(() -> new AccountException("Product not found."));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found with id:" + productId));
         return product;
     }
 }

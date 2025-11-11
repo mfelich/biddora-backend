@@ -52,7 +52,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         Optional<Favorite> favorite = favoriteRepo.findByUserIdAndProductId(user.getId(), createFavoriteDto.getProductId());
 
         if (!favorite.isEmpty()) {
-            throw new AlreadyExistsException("This product is in your favorites already.");
+            throw new AlreadyExistsException("This product is already in your favorites.");
         }
 
         Favorite newFavorite = new Favorite();
@@ -69,7 +69,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         User user = entityFetcher.getCurrentUser();
 
         Favorite favorite = favoriteRepo.findByUserIdAndProductId(user.getId(), productId)
-                .orElseThrow(() -> new ResourceNotFoundException("Favorite with productId:" + productId + " not found!"));
+                .orElseThrow(() -> new ResourceNotFoundException("Favorite for product with ID:" + productId + " not found!"));
 
         favoriteRepo.delete(favorite);
     }

@@ -6,6 +6,9 @@ import com.example.biddora_backend.entity.Bid;
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
 import com.example.biddora_backend.entity.User;
+import com.example.biddora_backend.exception.AuctionEndedException;
+import com.example.biddora_backend.exception.AuctionNotOpenException;
+import com.example.biddora_backend.exception.BidTooLowException;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.handlers.SocketConnectionHandler;
 import com.example.biddora_backend.mapper.BidMapper;
@@ -53,7 +56,7 @@ public class BidServiceImpl implements BidService {
         Long highest = bidRepo.findTopByProductOrderByAmountDesc(product).map(Bid::getAmount).orElse(product.getStartingPrice());
 
         if (product.getProductStatus() != ProductStatus.OPEN) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bidding is not allowed. Auction is not active.");
+            throw new AuctionNotOpenException("Bidding is not allowed. Auction is not open.");
         }
 
         if (product.getUser().equals(user)) {
@@ -61,11 +64,11 @@ public class BidServiceImpl implements BidService {
         }
 
         if (LocalDateTime.now().isAfter(product.getEndTime())) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Auction has ended.");
+            throw new AuctionEndedException("Auction ended at:" + product.getEndTime());
         }
 
         if (createBidDto.getAmount() <= highest) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Bid must be higher than current highest bid.");
+            throw new BidTooLowException("Bid must be higher than current highest bid: " + highest);
         }
 
         //Creating bid
@@ -100,7 +103,7 @@ public class BidServiceImpl implements BidService {
         Page<Bid> bids = bidRepo.findByProductIdOrderByAmountDesc(product.getId(), pageRequest);
 
         if (bids.isEmpty()){
-            throw new ResourceNotFoundException("This product has no bids!");
+            throw new ResourceNotFoundException("There are no bids for this product!");
         }
 
         return bids.map(bidMapper::mapToDto);

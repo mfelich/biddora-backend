@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
         User user = entityFetcher.getUserById(userId);
 
         if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(userId)){
-            throw new AccessDeniedException("You cant edit this user!");
+            throw new AccessDeniedException("You do not have permission to edit this user.");
         }
 
         if (currentUser.getRole().equals(Role.ADMIN)){
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
         User user = entityFetcher.getCurrentUser();
 
         if (!user.getRole().equals(Role.ADMIN) && !user.getId().equals(id)) {
-            throw new AccessDeniedException("You can not delete this user");
+            throw new AccessDeniedException("You do not have permission to delete this user.");
         }
 
         userRepo.delete(entityFetcher.getUserById(id));

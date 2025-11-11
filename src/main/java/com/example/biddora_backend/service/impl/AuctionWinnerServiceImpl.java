@@ -6,6 +6,7 @@ import com.example.biddora_backend.entity.Bid;
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
 import com.example.biddora_backend.exception.AuctionNotEndedException;
+import com.example.biddora_backend.exception.NoBidsForProductException;
 import com.example.biddora_backend.mapper.AuctionWinnerMapper;
 import com.example.biddora_backend.repo.AuctionWinnerRepo;
 import com.example.biddora_backend.repo.BidRepo;
@@ -39,7 +40,7 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
         Optional<Bid> winningBidOpt = bidRepo.findTopByProductOrderByAmountDesc(product);
 
         if (winningBidOpt.isEmpty()) {
-            throw new IllegalStateException("Nema ponuda za proizvod:" + product.getName());
+            throw new NoBidsForProductException("There are no bids for the product with ID: " + product.getId());
         }
 
         Bid winningBid = winningBidOpt.get();
@@ -62,7 +63,7 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
         Product product = entityFetcher.getProductById(productId);
 
         if (!product.getProductStatus().equals(ProductStatus.CLOSED)) {
-            throw new AuctionNotEndedException("This auction is not over yet.");
+            throw new AuctionNotEndedException("The auction for this product has not ended yet.");
         }
 
         AuctionWinner auctionWinner = auctionWinnerRepo.findByProductId(productId);
