@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
                 webRequest.getDescription(false),
                 "ACCESS_DENIED_EXCEPTION"
         );
-        return ResponseEntity.ok(errorDetails);
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
 
