@@ -70,7 +70,7 @@ public class BidServiceImpl implements BidService {
 
         //Creating bid
         Bid bid = new Bid();
-        bid.setAmount(Long.valueOf(createBidDto.getAmount()));
+        bid.setAmount(createBidDto.getAmount());
         bid.setUser(user);
         bid.setProduct(product);
         bid.setTimestamp(LocalDateTime.now());

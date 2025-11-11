@@ -14,6 +14,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bid")
+@CrossOrigin(value = "http://localhost:5174")
 public class BidController {
 
 
@@ -27,7 +28,6 @@ public class BidController {
     @PostMapping
     ResponseEntity<BidDto> placeBid(@Valid @RequestBody CreateBidDto createBidDto) throws AccessDeniedException {
         BidDto bidDto = bidService.placeBid(createBidDto);
-
         return ResponseEntity.ok(bidDto);
     }
 

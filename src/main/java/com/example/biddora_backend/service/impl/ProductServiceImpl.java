@@ -14,7 +14,6 @@ import com.example.biddora_backend.service.AuctionWinnerService;
 import com.example.biddora_backend.service.ProductService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;

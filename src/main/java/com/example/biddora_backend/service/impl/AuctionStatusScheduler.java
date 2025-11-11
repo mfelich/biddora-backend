@@ -1,7 +1,6 @@
 package com.example.biddora_backend.service.impl;
 
 import com.example.biddora_backend.service.ProductService;
-import jakarta.transaction.Transactional;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
