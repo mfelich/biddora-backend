@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface BidService {
-    BidDto placeBid(CreateBidDto createBidDto) throws AccessDeniedException;
+    BidDto placeBid(CreateBidDto createBidDto);
     Page<BidDto> getBidsByProductId(Long productId, Optional<Integer> page);
 }

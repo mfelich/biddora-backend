@@ -4,7 +4,6 @@ import com.example.biddora_backend.dto.ratingDtos.CreateRatingDto;
 import com.example.biddora_backend.dto.ratingDtos.RatingDto;
 import com.example.biddora_backend.dto.ratingDtos.UpdateRatingDto;
 import com.example.biddora_backend.service.RatingService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,8 +15,11 @@ import java.util.List;
 @RequestMapping("/api/ratings")
 public class RatingController {
 
-    @Autowired
     private RatingService ratingService;
+
+    public RatingController(RatingService ratingService) {
+        this.ratingService=ratingService;
+    }
 
     @PostMapping
     ResponseEntity<RatingDto> createRating(@RequestBody CreateRatingDto createRatingDto) {
@@ -41,12 +43,12 @@ public class RatingController {
 
     @PutMapping("/{ratingId}")
     ResponseEntity<RatingDto> updateRating(@PathVariable Long ratingId,
-                                           @RequestBody UpdateRatingDto updateRatingDto) throws AccessDeniedException {
+                                           @RequestBody UpdateRatingDto updateRatingDto) {
         return ResponseEntity.ok(ratingService.updateRating(ratingId,updateRatingDto));
     }
 
     @DeleteMapping("/{ratingId}")
-    ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) throws AccessDeniedException{
+    ResponseEntity<Void> deleteRating(@PathVariable Long ratingId) {
         ratingService.deleteRating(ratingId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }

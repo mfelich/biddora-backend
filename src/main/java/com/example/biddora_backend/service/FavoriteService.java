@@ -2,7 +2,6 @@ package com.example.biddora_backend.service;
 
 import com.example.biddora_backend.dto.favoriteDtos.CreateFavoriteDto;
 import com.example.biddora_backend.dto.favoriteDtos.FavoriteDto;
-import com.example.biddora_backend.entity.Favorite;
 
 import java.util.List;
 

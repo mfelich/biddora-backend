@@ -13,8 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auction-winner")
 public class AuctionWinnerController {
 
-    @Autowired
     private AuctionWinnerService auctionWinnerService;
+
+    public AuctionWinnerController(AuctionWinnerService auctionWinnerService) {
+        this.auctionWinnerService=auctionWinnerService;
+    }
 
     @GetMapping("/product/{productId}")
     ResponseEntity<AuctionWinnerDto> getAuctionWinner(@PathVariable Long productId){

@@ -16,19 +16,20 @@ import java.util.Optional;
 @RequestMapping("/api/user")
 public class UserController {
 
-    @Autowired
     private UserService userService;
 
-    //Edit user
+    public UserController(UserService userService) {
+        this.userService=userService;
+    }
+
     @PutMapping("/{userId}")
     ResponseEntity<UserDto> editUser(@PathVariable("userId") Long userId,
-                                     @RequestBody EditUserDto editUserDto)throws AccessDeniedException{
+                                     @RequestBody EditUserDto editUserDto) {
         UserDto userDto = userService.editUser(userId,editUserDto);
 
         return ResponseEntity.ok(userDto);
     }
 
-    //Get user by id
     @GetMapping("/{id}")
     ResponseEntity<UserDto> getUser(@PathVariable Long id){
         UserDto userDto = userService.getUser(id);
@@ -36,7 +37,6 @@ public class UserController {
         return ResponseEntity.ok(userDto);
     }
 
-    //Get all users
     @GetMapping("/all")
     ResponseEntity<Page<UserDto>> getAllUsers(@RequestParam Optional<Integer> page,
                                               @RequestParam Optional<String> sortBy,
@@ -44,10 +44,9 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers(page, sortBy, username));
     }
 
-    //Delete user by id
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    ResponseEntity<String> deleteUser(@PathVariable Long id) throws AccessDeniedException {
+    ResponseEntity<String> deleteUser(@PathVariable Long id) {
         String answer = userService.deleteUser(id);
         return ResponseEntity.ok(answer);
     }

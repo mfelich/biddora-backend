@@ -6,30 +6,20 @@ import com.example.biddora_backend.entity.Bid;
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
 import com.example.biddora_backend.entity.User;
-import com.example.biddora_backend.exception.AuctionEndedException;
-import com.example.biddora_backend.exception.AuctionNotOpenException;
-import com.example.biddora_backend.exception.BidTooLowException;
-import com.example.biddora_backend.exception.ResourceNotFoundException;
+import com.example.biddora_backend.exception.*;
 import com.example.biddora_backend.handlers.SocketConnectionHandler;
 import com.example.biddora_backend.mapper.BidMapper;
 import com.example.biddora_backend.repo.BidRepo;
 import com.example.biddora_backend.service.BidService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BidServiceImpl implements BidService {
@@ -48,7 +38,7 @@ public class BidServiceImpl implements BidService {
     
     @Override
     @Transactional
-    public BidDto placeBid(CreateBidDto createBidDto) throws AccessDeniedException {
+    public BidDto placeBid(CreateBidDto createBidDto) {
 
         Product product = entityFetcher.getProductById(createBidDto.getProductId());
         User user = entityFetcher.getCurrentUser();
@@ -56,22 +46,21 @@ public class BidServiceImpl implements BidService {
         Long highest = bidRepo.findTopByProductOrderByAmountDesc(product).map(Bid::getAmount).orElse(product.getStartingPrice());
 
         if (product.getProductStatus() != ProductStatus.OPEN) {
-            throw new AuctionNotOpenException("Bidding is not allowed. Auction is not open.");
+            throw new BidException("Bidding is not allowed. Auction is not open.");
         }
 
         if (product.getUser().equals(user)) {
-            throw new AccessDeniedException("You cannot bid on your own product.");
+            throw new BidAccessDeniedException("You cannot bid on your own product.");
         }
 
         if (LocalDateTime.now().isAfter(product.getEndTime())) {
-            throw new AuctionEndedException("Auction ended at:" + product.getEndTime());
+            throw new BidException("Auction ended at:" + product.getEndTime());
         }
 
         if (createBidDto.getAmount() <= highest) {
-            throw new BidTooLowException("Bid must be higher than current highest bid: " + highest);
+            throw new BidException("Bid must be higher than current highest bid: " + highest);
         }
 
-        //Creating bid
         Bid bid = new Bid();
         bid.setAmount(createBidDto.getAmount());
         bid.setUser(user);

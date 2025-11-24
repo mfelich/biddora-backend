@@ -4,6 +4,7 @@ import com.example.biddora_backend.dto.userDtos.EditUserDto;
 import com.example.biddora_backend.dto.userDtos.UserDto;
 import com.example.biddora_backend.entity.Role;
 import com.example.biddora_backend.entity.User;
+import com.example.biddora_backend.exception.UserAccessDeniedException;
 import com.example.biddora_backend.mapper.UserMapper;
 import com.example.biddora_backend.repo.UserRepo;
 import com.example.biddora_backend.service.util.EntityFetcher;
@@ -13,7 +14,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 @Service
@@ -23,14 +23,12 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
     private EntityFetcher entityFetcher;
 
-
     public UserServiceImpl(UserRepo userRepo, UserMapper userMapper, EntityFetcher entityFetcher) {
         this.userRepo = userRepo;
         this.userMapper = userMapper;
         this.entityFetcher = entityFetcher;
     }
 
-    //Get user by id
     @Override
     public UserDto getUser(Long userId) {
         User user = entityFetcher.getUserById(userId);
@@ -38,7 +36,6 @@ public class UserServiceImpl implements UserService {
         return userMapper.mapToDto(user);
     }
 
-    //Get all users
     @Override
     public Page<UserDto> getAllUsers(Optional<Integer> page, Optional<String> sortBy, Optional<String> username) {
         PageRequest pageRequest = PageRequest.of(
@@ -59,14 +56,13 @@ public class UserServiceImpl implements UserService {
         return userDtos.map(userMapper::mapToDto);
     }
 
-    //Edit user
     @Override
-    public UserDto editUser(Long userId, EditUserDto editUserDto) throws AccessDeniedException {
+    public UserDto editUser(Long userId, EditUserDto editUserDto) {
         User currentUser = entityFetcher.getCurrentUser();
         User user = entityFetcher.getUserById(userId);
 
         if (!currentUser.getRole().equals(Role.ADMIN) && !currentUser.getId().equals(userId)){
-            throw new AccessDeniedException("You do not have permission to edit this user.");
+            throw new UserAccessDeniedException("You do not have permission to edit this user.");
         }
 
         if (currentUser.getRole().equals(Role.ADMIN)){
@@ -78,16 +74,15 @@ public class UserServiceImpl implements UserService {
         return userMapper.mapToDto(userRepo.save(user));
     }
 
-    //Delete user
     @Override
-    public String deleteUser(Long id) throws AccessDeniedException {
+    public String deleteUser(Long id) {
         User user = entityFetcher.getCurrentUser();
 
         if (!user.getRole().equals(Role.ADMIN) && !user.getId().equals(id)) {
-            throw new AccessDeniedException("You do not have permission to delete this user.");
+            throw new UserAccessDeniedException("You do not have permission to delete this user.");
         }
 
         userRepo.delete(entityFetcher.getUserById(id));
-        return "User deleted successfully!";
+        return "User deleted successfully.";
     }
 }

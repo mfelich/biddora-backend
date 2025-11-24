@@ -4,13 +4,12 @@ import com.example.biddora_backend.dto.favoriteDtos.CreateFavoriteDto;
 import com.example.biddora_backend.dto.favoriteDtos.FavoriteDto;
 import com.example.biddora_backend.entity.Favorite;
 import com.example.biddora_backend.entity.User;
-import com.example.biddora_backend.exception.AlreadyExistsException;
+import com.example.biddora_backend.exception.ResourceAlreadyExistsException;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.mapper.FavoriteMapper;
 import com.example.biddora_backend.repo.FavoriteRepo;
 import com.example.biddora_backend.service.FavoriteService;
 import com.example.biddora_backend.service.util.EntityFetcher;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -52,7 +51,7 @@ public class FavoriteServiceImpl implements FavoriteService {
         Optional<Favorite> favorite = favoriteRepo.findByUserIdAndProductId(user.getId(), createFavoriteDto.getProductId());
 
         if (!favorite.isEmpty()) {
-            throw new AlreadyExistsException("This product is already in your favorites.");
+            throw new ResourceAlreadyExistsException("This product is already in your favorites.");
         }
 
         Favorite newFavorite = new Favorite();

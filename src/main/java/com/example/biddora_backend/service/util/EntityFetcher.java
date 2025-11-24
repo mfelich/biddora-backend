@@ -2,11 +2,10 @@ package com.example.biddora_backend.service.util;
 
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.User;
-import com.example.biddora_backend.exception.AccountException;
+import com.example.biddora_backend.exception.UserNotFoundException;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.repo.ProductRepo;
 import com.example.biddora_backend.repo.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
@@ -23,7 +22,7 @@ public class EntityFetcher {
 
     public User getUserById(Long id) {
         return userRepo.findById(id)
-                .orElseThrow(() -> new AccountException("User not found with id:" + id));
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
     public User findUserByUsername(String username) {

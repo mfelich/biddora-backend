@@ -6,19 +6,16 @@ import com.example.biddora_backend.dto.ratingDtos.UpdateRatingDto;
 import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.Rating;
 import com.example.biddora_backend.entity.User;
-import com.example.biddora_backend.exception.AccountException;
+import com.example.biddora_backend.exception.RatingAccessDeniedException;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.mapper.RatingMapper;
 import com.example.biddora_backend.repo.RatingRepo;
 import com.example.biddora_backend.service.RatingService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,24 +54,24 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     @Transactional
-    public void deleteRating(Long ratingId) throws AccessDeniedException{
+    public void deleteRating(Long ratingId){
         User user = entityFetcher.getCurrentUser();
         Rating rating = getRatingById(ratingId);
 
         if (!user.getId().equals(rating.getUser().getId())) {
-            throw new AccessDeniedException("You can delete only ratings posted by yourself!");
+            throw new RatingAccessDeniedException("You can delete only ratings posted by yourself!");
         }
         else ratingRepo.delete(rating);
     }
 
     @Override
     @Transactional
-    public RatingDto updateRating(Long ratingId, UpdateRatingDto updateRatingDto) throws AccessDeniedException{
+    public RatingDto updateRating(Long ratingId, UpdateRatingDto updateRatingDto) {
         User user = entityFetcher.getCurrentUser();
         Rating rating = getRatingById(ratingId);
 
         if(!user.getId().equals(rating.getUser().getId())) {
-            throw new AccessDeniedException("You can edit only ratings posted by yourself!");
+            throw new RatingAccessDeniedException("You can edit only ratings posted by yourself!");
         }
         else {
             rating.setComment(updateRatingDto.getComment());

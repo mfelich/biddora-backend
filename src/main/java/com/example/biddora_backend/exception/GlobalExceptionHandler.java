@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.security.auth.login.AccountException;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,15 +18,15 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(AccountException.class)
-    ResponseEntity<ErrorDetails> handleAccountException(AccountException exception,
+    @ExceptionHandler(UserNotFoundException.class)
+    ResponseEntity<ErrorDetails> handleUserNotFoundException(UserNotFoundException exception,
                                                         WebRequest webRequest){
 
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-"ACCOUNT_NOT_FOUND");
+                "USER_NOT_FOUND");
 
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
@@ -86,37 +84,8 @@ public class GlobalExceptionHandler {
                 "VALIDATION_ERROR"
         );
 
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(errorDetails);
+        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<?> handleAccessDeniedException(AccessDeniedException exception,
-                                                         WebRequest webRequest){
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                exception.getMessage(),
-                webRequest.getDescription(false),
-                "ACCESS_DENIED_EXCEPTION"
-        );
-        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
-    }
-
-
-    @ExceptionHandler(AlreadyExistsException.class)
-    public ResponseEntity<?> handleAlreadyExistException(AlreadyExistsException exception,
-                                                         WebRequest webRequest){
-
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                exception.getMessage(),
-                webRequest.getDescription(false),
-                "CONFLICT"
-        );
-
-        return ResponseEntity.ok(errorDetails);
-    }
-
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException exception,
@@ -126,40 +95,14 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "NOT_FOUND"
+                "RESOURCE_NOT_FOUND"
         );
 
-        return ResponseEntity.ok(errorDetails);
+        return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<?> handleResponseStatusException(ResponseStatusException exception,
-                                                           WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                exception.getMessage(),
-                webRequest.getDescription(false),
-                "RESPONSE_STATUS_EXCEPTION"
-        );
-
-        return new ResponseEntity<>(errorDetails, exception.getStatusCode());
-    }
-
-    @ExceptionHandler(AuctionNotEndedException.class)
-    public ResponseEntity<?> handleAuctionNotEndedException(ResponseStatusException exception,
-                                                            WebRequest webRequest) {
-        ErrorDetails errorDetails = new ErrorDetails(
-                LocalDateTime.now(),
-                exception.getMessage(),
-                webRequest.getDescription(false),
-                "AUCTION_NOT_ENDED"
-        );
-
-        return ResponseEntity.ok(errorDetails);
-    }
-
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<?> handleBadRequestException(ResponseStatusException exception,
+    @ExceptionHandler(ProductBadRequestException.class)
+    public ResponseEntity<?> handleProductBadRequestException(ProductBadRequestException exception,
                                                        WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
@@ -171,9 +114,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(AuctionNotOpenException.class)
-    public ResponseEntity<?> handleAuctionNotOpenException(ResponseStatusException exception,
-                                                       WebRequest webRequest) {
+    @ExceptionHandler(BidException.class)
+    public ResponseEntity<?> handleAuctionException(BidException exception,
+                                                    WebRequest webRequest) {
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
@@ -184,42 +127,59 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(AuctionEndedException.class)
-    public ResponseEntity<?> handleAuctionEndedException(ResponseStatusException exception,
-                                                           WebRequest webRequest) {
+    @ExceptionHandler(ProductAccessDeniedException.class)
+    public ResponseEntity<ErrorDetails> handleProductAccessDeniedException(ProductAccessDeniedException exception,
+                                                                           WebRequest webRequest) {
+
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "409_CONFLICT"
+                "ACCESS_DENIED"
         );
 
-        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(BidTooLowException.class)
-    public ResponseEntity<?> handleBidTooLowException(ResponseStatusException exception,
-                                                         WebRequest webRequest) {
+    @ExceptionHandler(RatingAccessDeniedException.class)
+    public ResponseEntity<ErrorDetails> handleRatingAccessDeniedException(RatingAccessDeniedException exception,
+                                                                          WebRequest webRequest) {
+
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "409_CONFLICT"
+                "RATING_ACCESS_DENIED"
         );
 
-        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 
-    @ExceptionHandler(NoBidsForProductException.class)
-    public ResponseEntity<?> handleNoBidsForProductException(ResponseStatusException exception,
-                                                      WebRequest webRequest) {
+    @ExceptionHandler(UserAccessDeniedException.class)
+    public ResponseEntity<ErrorDetails> handleRatingAccessDeniedException(UserAccessDeniedException exception,
+                                                                          WebRequest webRequest) {
+
         ErrorDetails errorDetails = new ErrorDetails(
                 LocalDateTime.now(),
                 exception.getMessage(),
                 webRequest.getDescription(false),
-                "409_CONFLICT"
+                "USER_ACCESS_DENIED"
         );
 
-        return new ResponseEntity<>(errorDetails, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(BidAccessDeniedException.class)
+    public ResponseEntity<ErrorDetails> handleRatingAccessDeniedException(BidAccessDeniedException exception,
+                                                                          WebRequest webRequest) {
+
+        ErrorDetails errorDetails = new ErrorDetails(
+                LocalDateTime.now(),
+                exception.getMessage(),
+                webRequest.getDescription(false),
+                "BID_ACCESS_DENIED"
+        );
+
+        return new ResponseEntity<>(errorDetails, HttpStatus.FORBIDDEN);
     }
 }

@@ -7,7 +7,8 @@ import com.example.biddora_backend.entity.Product;
 import com.example.biddora_backend.entity.ProductStatus;
 import com.example.biddora_backend.entity.Role;
 import com.example.biddora_backend.entity.User;
-import com.example.biddora_backend.exception.BadRequestException;
+import com.example.biddora_backend.exception.ProductBadRequestException;
+import com.example.biddora_backend.exception.ProductAccessDeniedException;
 import com.example.biddora_backend.exception.ResourceNotFoundException;
 import com.example.biddora_backend.mapper.ProductMapper;
 import com.example.biddora_backend.repo.ProductRepo;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto addProduct(CreateProductDto createProductDto) throws Exception {
 
         if (!createProductDto.getEndTime().isAfter(createProductDto.getStartTime())) {
-            throw new BadRequestException("End time must be after start time!");
+            throw new ProductBadRequestException("End time must be after start time!");
         }
 
         User user = entityFetcher.getCurrentUser();
@@ -131,12 +131,12 @@ public class ProductServiceImpl implements ProductService {
     //Edit product by id (ADMIN cannot edit product)
     @Override
     @Transactional
-    public ProductDto editProduct(Long productId, EditProductDto editProductDto) throws AccessDeniedException {
+    public ProductDto editProduct(Long productId, EditProductDto editProductDto) {
         User user = entityFetcher.getCurrentUser();
         Product product = entityFetcher.getProductById(productId);
 
         if (!product.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException("You can not edit this product!");
+            throw new ProductAccessDeniedException("You can not edit this product!");
         }
 
         product.setName(editProductDto.getName());
@@ -149,13 +149,13 @@ public class ProductServiceImpl implements ProductService {
     //Delete product by id (ADMIN can also delete everyones product)
     @Override
     @Transactional
-    public String deleteProduct(Long productId) throws AccessDeniedException {
+    public String deleteProduct(Long productId) {
         User user = entityFetcher.getCurrentUser();
         Product product = entityFetcher.getProductById(productId);
 
         if (!user.getRole().equals(Role.ADMIN) &&
                 !user.getId().equals(product.getUser().getId())) {
-            throw new AccessDeniedException("You can not delete this product!");
+            throw new ProductAccessDeniedException("You can not delete this product!");
         }
 
         productRepo.delete(product);

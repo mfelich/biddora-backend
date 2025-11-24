@@ -13,8 +13,11 @@ import java.util.List;
 @RequestMapping("/api/favorites")
 public class FavoriteController {
 
-    @Autowired
     private FavoriteService favoriteService;
+
+    public FavoriteController(FavoriteService favoriteService) {
+        this.favoriteService=favoriteService;
+    }
 
     @GetMapping
     ResponseEntity<List<FavoriteDto>> getAllFavorites(){
