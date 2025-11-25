@@ -2,7 +2,7 @@ package com.example.biddora_backend.controller;
 
 import com.example.biddora_backend.dto.AuctionWinnerDto;
 import com.example.biddora_backend.service.AuctionWinnerService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,13 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auction-winner")
+@RequiredArgsConstructor
 public class AuctionWinnerController {
 
-    private AuctionWinnerService auctionWinnerService;
-
-    public AuctionWinnerController(AuctionWinnerService auctionWinnerService) {
-        this.auctionWinnerService=auctionWinnerService;
-    }
+    private final AuctionWinnerService auctionWinnerService;
 
     @GetMapping("/product/{productId}")
     ResponseEntity<AuctionWinnerDto> getAuctionWinner(@PathVariable Long productId){

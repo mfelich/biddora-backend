@@ -16,6 +16,7 @@ import com.example.biddora_backend.service.AuctionWinnerService;
 import com.example.biddora_backend.service.ProductService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepo productRepo;
@@ -35,14 +37,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final EntityFetcher entityFetcher;
 
-    public ProductServiceImpl(ProductRepo productRepo,AuctionWinnerService auctionWinnerService, EntityFetcher entityFetcher, ProductMapper productMapper) {
-        this.productRepo = productRepo;
-        this.auctionWinnerService=auctionWinnerService;
-        this.entityFetcher = entityFetcher;
-        this.productMapper = productMapper;
-    }
-
-    //Create product
     @Override
     @Transactional
     public ProductDto addProduct(CreateProductDto createProductDto) throws Exception {
@@ -68,7 +62,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.mapToDto(savedProduct);
     }
 
-    //Get product by id
     @Override
     public ProductDto getProductById(Long productId) {
         Product product = entityFetcher.getProductById(productId);
@@ -127,8 +120,6 @@ public class ProductServiceImpl implements ProductService {
         return products.map(productMapper::mapToDto);
     }
 
-
-    //Edit product by id (ADMIN cannot edit product)
     @Override
     @Transactional
     public ProductDto editProduct(Long productId, EditProductDto editProductDto) {
@@ -146,7 +137,6 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.mapToDto(product);
     }
 
-    //Delete product by id (ADMIN can also delete everyones product)
     @Override
     @Transactional
     public String deleteProduct(Long productId) {

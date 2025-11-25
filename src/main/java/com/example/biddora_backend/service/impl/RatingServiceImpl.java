@@ -13,6 +13,7 @@ import com.example.biddora_backend.repo.RatingRepo;
 import com.example.biddora_backend.service.RatingService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,19 +21,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class RatingServiceImpl implements RatingService {
 
-
-    private RatingRepo ratingRepo;
-    private EntityFetcher entityFetcher;
-    private RatingMapper ratingMapper;
-
-    public RatingServiceImpl(RatingRepo ratingRepo, EntityFetcher entityFetcher, RatingMapper ratingMapper) {
-        this.ratingRepo=ratingRepo;
-        this.entityFetcher=entityFetcher;
-        this.ratingMapper=ratingMapper;
-    }
-
+    private final RatingRepo ratingRepo;
+    private final EntityFetcher entityFetcher;
+    private final RatingMapper ratingMapper;
 
     @Override
     public RatingDto createRating(CreateRatingDto createRatingDto) {

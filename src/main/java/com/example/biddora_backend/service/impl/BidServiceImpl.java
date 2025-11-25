@@ -13,6 +13,7 @@ import com.example.biddora_backend.repo.BidRepo;
 import com.example.biddora_backend.service.BidService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class BidServiceImpl implements BidService {
 
     private final BidRepo bidRepo;
@@ -29,13 +31,6 @@ public class BidServiceImpl implements BidService {
     private final EntityFetcher entityFetcher;
     private final SocketConnectionHandler socketConnectionHandler;
 
-    public BidServiceImpl(BidRepo bidRepo, BidMapper bidMapper, EntityFetcher entityFetcher, SocketConnectionHandler socketConnectionHandler) {
-        this.bidRepo = bidRepo;
-        this.bidMapper = bidMapper;
-        this.entityFetcher = entityFetcher;
-        this.socketConnectionHandler=socketConnectionHandler;
-    }
-    
     @Override
     @Transactional
     public BidDto placeBid(CreateBidDto createBidDto) {

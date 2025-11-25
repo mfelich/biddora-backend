@@ -4,6 +4,7 @@ import com.example.biddora_backend.dto.bidDtos.BidDto;
 import com.example.biddora_backend.dto.bidDtos.CreateBidDto;
 import com.example.biddora_backend.service.BidService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,14 +13,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/bid")
-@CrossOrigin(value = "http://localhost:5174")
+@RequiredArgsConstructor
 public class BidController {
 
-    private BidService bidService;
-
-    public BidController(BidService bidService) {
-        this.bidService=bidService;
-    }
+    private final BidService bidService;
 
     @PostMapping
     ResponseEntity<BidDto> placeBid(@Valid @RequestBody CreateBidDto createBidDto) {

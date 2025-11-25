@@ -3,7 +3,7 @@ package com.example.biddora_backend.controller;
 import com.example.biddora_backend.dto.favoriteDtos.CreateFavoriteDto;
 import com.example.biddora_backend.dto.favoriteDtos.FavoriteDto;
 import com.example.biddora_backend.service.FavoriteService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,13 +11,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/favorites")
+@RequiredArgsConstructor
 public class FavoriteController {
 
-    private FavoriteService favoriteService;
-
-    public FavoriteController(FavoriteService favoriteService) {
-        this.favoriteService=favoriteService;
-    }
+    private final FavoriteService favoriteService;
 
     @GetMapping
     ResponseEntity<List<FavoriteDto>> getAllFavorites(){

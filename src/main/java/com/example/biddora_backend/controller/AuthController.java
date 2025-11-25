@@ -6,19 +6,17 @@ import com.example.biddora_backend.dto.auth.RegisterRequestDto;
 import com.example.biddora_backend.dto.userDtos.UserDto;
 import com.example.biddora_backend.service.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    private AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService=authService;
-    }
+    private final AuthService authService;
 
     @PostMapping("/register")
     ResponseEntity<UserDto> createUser(@Valid @RequestBody RegisterRequestDto registerRequestDto) {

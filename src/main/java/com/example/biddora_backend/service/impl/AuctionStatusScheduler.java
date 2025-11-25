@@ -1,17 +1,15 @@
 package com.example.biddora_backend.service.impl;
 
 import com.example.biddora_backend.service.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuctionStatusScheduler {
 
     private final ProductService productService;
-
-    public AuctionStatusScheduler(ProductService productService){
-        this.productService=productService;
-    }
 
     @Scheduled(cron = "1 * * * * *")
     public void updateProductStatus(){

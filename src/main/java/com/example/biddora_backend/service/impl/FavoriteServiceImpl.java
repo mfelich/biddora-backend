@@ -10,6 +10,7 @@ import com.example.biddora_backend.mapper.FavoriteMapper;
 import com.example.biddora_backend.repo.FavoriteRepo;
 import com.example.biddora_backend.service.FavoriteService;
 import com.example.biddora_backend.service.util.EntityFetcher;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,17 +18,12 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FavoriteServiceImpl implements FavoriteService {
 
-    private FavoriteRepo favoriteRepo;
-    private FavoriteMapper favoriteMapper;
-    private EntityFetcher entityFetcher;
-
-    public FavoriteServiceImpl(FavoriteRepo favoriteRepo,FavoriteMapper favoriteMapper, EntityFetcher entityFetcher) {
-        this.favoriteRepo=favoriteRepo;
-        this.favoriteMapper=favoriteMapper;
-        this.entityFetcher=entityFetcher;
-    }
+    private final FavoriteRepo favoriteRepo;
+    private final FavoriteMapper favoriteMapper;
+    private final EntityFetcher entityFetcher;
 
     @Override
     public List<FavoriteDto> getFavorites() {
@@ -40,8 +36,6 @@ public class FavoriteServiceImpl implements FavoriteService {
                 .map(favoriteMapper::mapToDto)
                 .collect(Collectors.toList());
     }
-
-
 
     @Override
     public FavoriteDto addToFavorite(CreateFavoriteDto createFavoriteDto) {

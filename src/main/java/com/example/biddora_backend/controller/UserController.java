@@ -3,24 +3,20 @@ package com.example.biddora_backend.controller;
 import com.example.biddora_backend.dto.userDtos.EditUserDto;
 import com.example.biddora_backend.dto.userDtos.UserDto;
 import com.example.biddora_backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
+@RequiredArgsConstructor
 public class UserController {
 
-    private UserService userService;
-
-    public UserController(UserService userService) {
-        this.userService=userService;
-    }
+    private final UserService userService;
 
     @PutMapping("/{userId}")
     ResponseEntity<UserDto> editUser(@PathVariable("userId") Long userId,

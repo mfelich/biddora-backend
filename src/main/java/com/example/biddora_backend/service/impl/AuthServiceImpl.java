@@ -12,6 +12,7 @@ import com.example.biddora_backend.repo.UserRepo;
 import com.example.biddora_backend.service.AuthService;
 import com.example.biddora_backend.service.security.JWTService;
 import com.example.biddora_backend.service.util.EntityFetcher;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,23 +23,15 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private AuthenticationManager authenticationManager;
-    private PasswordEncoder encoder;
-    private UserRepo userRepo;
-    private UserMapper userMapper;
-    private JWTService jwtService;
-    private EntityFetcher entityFetcher;
-
-    public AuthServiceImpl(AuthenticationManager authenticationManager, PasswordEncoder encoder, UserRepo userRepo, UserMapper userMapper, JWTService jwtService, EntityFetcher entityFetcher) {
-        this.authenticationManager = authenticationManager;
-        this.encoder = encoder;
-        this.userRepo = userRepo;
-        this.userMapper = userMapper;
-        this.jwtService = jwtService;
-        this.entityFetcher = entityFetcher;
-    }
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder encoder;
+    private final UserRepo userRepo;
+    private final UserMapper userMapper;
+    private final JWTService jwtService;
+    private final EntityFetcher entityFetcher;
 
     @Override
     public UserDto register(RegisterRequestDto registerRequestDto) {

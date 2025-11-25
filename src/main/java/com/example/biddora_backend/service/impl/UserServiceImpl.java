@@ -9,6 +9,7 @@ import com.example.biddora_backend.mapper.UserMapper;
 import com.example.biddora_backend.repo.UserRepo;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import com.example.biddora_backend.service.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -17,17 +18,12 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private UserRepo userRepo;
-    private UserMapper userMapper;
-    private EntityFetcher entityFetcher;
-
-    public UserServiceImpl(UserRepo userRepo, UserMapper userMapper, EntityFetcher entityFetcher) {
-        this.userRepo = userRepo;
-        this.userMapper = userMapper;
-        this.entityFetcher = entityFetcher;
-    }
+    private final UserRepo userRepo;
+    private final UserMapper userMapper;
+    private final EntityFetcher entityFetcher;
 
     @Override
     public UserDto getUser(Long userId) {

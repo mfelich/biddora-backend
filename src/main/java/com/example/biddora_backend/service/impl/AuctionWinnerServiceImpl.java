@@ -12,24 +12,19 @@ import com.example.biddora_backend.repo.BidRepo;
 import com.example.biddora_backend.service.AuctionWinnerService;
 import com.example.biddora_backend.service.util.EntityFetcher;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class AuctionWinnerServiceImpl implements AuctionWinnerService {
 
-    private AuctionWinnerRepo auctionWinnerRepo;
-    private BidRepo bidRepo;
-    private EntityFetcher entityFetcher;
-    private AuctionWinnerMapper auctionWinnerMapper;
-
-    public AuctionWinnerServiceImpl(AuctionWinnerRepo auctionWinnerRepo, BidRepo bidRepo, AuctionWinnerMapper auctionWinnerMapper, EntityFetcher entityFetcher) {
-        this.auctionWinnerRepo = auctionWinnerRepo;
-        this.bidRepo = bidRepo;
-        this.auctionWinnerMapper = auctionWinnerMapper;
-        this.entityFetcher = entityFetcher;
-    }
+    private final AuctionWinnerRepo auctionWinnerRepo;
+    private final BidRepo bidRepo;
+    private final AuctionWinnerMapper auctionWinnerMapper;
+    private final EntityFetcher entityFetcher;
 
     @Override
     @Transactional
@@ -43,13 +38,11 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
 
         Bid winningBid = winningBidOpt.get();
 
-        //creating winner
         AuctionWinner auctionWinner = new AuctionWinner();
         auctionWinner.setUser(winningBid.getUser());
         auctionWinner.setProduct(product);
         auctionWinner.setAmount(winningBid.getAmount());
 
-        //saved winner
         AuctionWinner savedAuctionWinner = auctionWinnerRepo.save(auctionWinner);
 
         return savedAuctionWinner;

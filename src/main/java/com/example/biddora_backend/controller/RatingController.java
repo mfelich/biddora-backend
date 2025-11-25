@@ -4,22 +4,19 @@ import com.example.biddora_backend.dto.ratingDtos.CreateRatingDto;
 import com.example.biddora_backend.dto.ratingDtos.RatingDto;
 import com.example.biddora_backend.dto.ratingDtos.UpdateRatingDto;
 import com.example.biddora_backend.service.RatingService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/ratings")
+@RequiredArgsConstructor
 public class RatingController {
 
-    private RatingService ratingService;
-
-    public RatingController(RatingService ratingService) {
-        this.ratingService=ratingService;
-    }
+    private final RatingService ratingService;
 
     @PostMapping
     ResponseEntity<RatingDto> createRating(@RequestBody CreateRatingDto createRatingDto) {
