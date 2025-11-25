@@ -85,9 +85,6 @@ public class RatingServiceImpl implements RatingService {
     public List<RatingDto> getRatingsByUserId(Long userId) {
         List<Rating> ratings = ratingRepo.findByUserId(userId);
 
-        if (ratings.isEmpty()) {
-            throw new ResourceNotFoundException("This user has not submitted any ratings.");
-        }
         return ratings.stream().map(ratingMapper::mapToDto).toList();
     }
 
@@ -95,9 +92,6 @@ public class RatingServiceImpl implements RatingService {
     public List<RatingDto> getProductRatings(Long productId) {
         List<Rating> ratings = ratingRepo.findByProductId(productId);
 
-        if (ratings.isEmpty()){
-            throw new ResourceNotFoundException("There are no ratings for this product.");
-        }
         return ratings.stream().map(ratingMapper::mapToDto).collect(Collectors.toList());
     }
 

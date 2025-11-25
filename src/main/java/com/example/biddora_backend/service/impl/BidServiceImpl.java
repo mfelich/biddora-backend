@@ -86,10 +86,6 @@ public class BidServiceImpl implements BidService {
 
         Page<Bid> bids = bidRepo.findByProductIdOrderByAmountDesc(product.getId(), pageRequest);
 
-        if (bids.isEmpty()){
-            throw new ResourceNotFoundException("There are no bids for this product!");
-        }
-
         return bids.map(bidMapper::mapToDto);
     }
 }
