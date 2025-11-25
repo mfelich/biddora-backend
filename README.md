@@ -1,7 +1,7 @@
 <h1>Biddora - <i>real-time auction platform</i></h1>
 
 <h2>Project Overview</h2>
-<p>Biddora is a real-time auction platform backend that enables live bidding on products. The system provides real-time bid updates and highest bid tracking through WebSocket connections. JWT token-based security handles user authentication and authorization for all API requests. Additional features include product favorites management and user rating system.</p>
+<p>Biddora is a real-time auction backend platform that enables live bidding on products. The system provides real-time bid updates and highest bid tracking through WebSocket connections. JWT token-based security handles user authentication and authorization for all API requests. Additional features include product favorites management and user rating system.</p>
 
 <h2>Tech stack</h2>
 <ul>
