@@ -74,10 +74,6 @@ public class ProductServiceImpl implements ProductService {
         User user = entityFetcher.getUserById(userId);
         List<Product> products = productRepo.findAllByUserId(user.getId());
 
-        if (products.isEmpty()) {
-            throw new ResourceNotFoundException("This user has no products!");
-        }
-
         return products.stream().map(productMapper::mapToDto).collect(Collectors.toList());
     }
 
