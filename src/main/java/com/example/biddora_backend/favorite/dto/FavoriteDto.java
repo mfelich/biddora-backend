@@ -14,8 +14,6 @@ import lombok.Setter;
 public class FavoriteDto {
 
     private Long id;
-
     private UserDto user;
-
     private ProductDto product;
 }

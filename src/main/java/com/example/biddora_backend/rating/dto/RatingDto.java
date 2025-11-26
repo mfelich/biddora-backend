@@ -20,5 +20,5 @@ public class RatingDto {
     private ProductDto product;
     private String comment;
     private Integer ratingStars;
-    private LocalDateTime date;
+    private LocalDateTime ratingDate;
 }
