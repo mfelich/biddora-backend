@@ -7,7 +7,6 @@ import com.example.biddora_backend.product.entity.Product;
 import com.example.biddora_backend.rating.entity.Rating;
 import com.example.biddora_backend.user.entity.User;
 import com.example.biddora_backend.common.exception.RatingAccessDeniedException;
-import com.example.biddora_backend.common.exception.ResourceNotFoundException;
 import com.example.biddora_backend.rating.mapper.RatingMapper;
 import com.example.biddora_backend.rating.repo.RatingRepo;
 import com.example.biddora_backend.rating.service.RatingService;
@@ -45,12 +44,11 @@ public class RatingServiceImpl implements RatingService {
         return ratingMapper.mapToDto(savedRating);
     }
 
-
     @Override
     @Transactional
     public void deleteRating(Long ratingId){
         User user = entityFetcher.getCurrentUser();
-        Rating rating = getRatingById(ratingId);
+        Rating rating = entityFetcher.getRatingById(ratingId);
 
         if (!user.getId().equals(rating.getUser().getId())) {
             throw new RatingAccessDeniedException("You can delete only ratings posted by yourself!");
@@ -62,7 +60,7 @@ public class RatingServiceImpl implements RatingService {
     @Transactional
     public RatingDto updateRating(Long ratingId, UpdateRatingDto updateRatingDto) {
         User user = entityFetcher.getCurrentUser();
-        Rating rating = getRatingById(ratingId);
+        Rating rating = entityFetcher.getRatingById(ratingId);
 
         if(!user.getId().equals(rating.getUser().getId())) {
             throw new RatingAccessDeniedException("You can edit only ratings posted by yourself!");
@@ -77,7 +75,7 @@ public class RatingServiceImpl implements RatingService {
 
     @Override
     public RatingDto getById(Long id) {
-        Rating rating = getRatingById(id);
+        Rating rating = entityFetcher.getRatingById(id);
         return ratingMapper.mapToDto(rating);
     }
 
@@ -95,9 +93,4 @@ public class RatingServiceImpl implements RatingService {
         return ratings.stream().map(ratingMapper::mapToDto).collect(Collectors.toList());
     }
 
-
-    private Rating getRatingById(Long ratingId){
-        return ratingRepo.findById(ratingId)
-                .orElseThrow(() ->  new ResourceNotFoundException("Rating not found with ID: " + ratingId));
-    }
 }

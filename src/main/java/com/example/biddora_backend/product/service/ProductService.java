@@ -10,12 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 public interface    ProductService {
-    ProductDto addProduct(CreateProductDto createProductDto) throws Exception;
+    ProductDto addProduct(CreateProductDto createProductDto);
     ProductDto getProductById(Long productId);
     List<ProductDto> getProductsByUser(Long userId);
     Page<ProductDto> getAllProducts(Optional<Integer> page, Optional<String> sortBy, Optional<String> name, Optional<ProductStatus> productType);
     ProductDto editProduct(Long productId, EditProductDto editProductDto);
     String deleteProduct(Long productId);
-    void openScheduledAuctions();
-    void closeExpiredAuctions();
 }

@@ -23,7 +23,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    ResponseEntity<ProductDto> addProduct(@Valid @RequestBody CreateProductDto createProductDto) throws Exception{
+    ResponseEntity<ProductDto> addProduct(@Valid @RequestBody CreateProductDto createProductDto) {
         return ResponseEntity.ok(productService.addProduct(createProductDto));
     }
 

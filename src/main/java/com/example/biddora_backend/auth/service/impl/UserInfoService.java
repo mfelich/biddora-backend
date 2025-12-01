@@ -1,6 +1,7 @@
 package com.example.biddora_backend.auth.service.impl;
 
 import com.example.biddora_backend.auth.model.UserInfoDetails;
+import com.example.biddora_backend.common.exception.UserNotFoundException;
 import com.example.biddora_backend.user.entity.User;
 import com.example.biddora_backend.user.repo.UserRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,11 +23,9 @@ public class UserInfoService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepo.findByUsername(username);
+        User user = userRepo.findByUsername(username)
+                .orElseThrow(() -> new UserNotFoundException("User not found."));
 
-        if (user == null) {
-            throw new UsernameNotFoundException("User not found!");
-        }
         return new UserInfoDetails(user);
     }
 }

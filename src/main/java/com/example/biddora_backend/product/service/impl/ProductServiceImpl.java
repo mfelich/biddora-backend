@@ -38,7 +38,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
-    public ProductDto addProduct(CreateProductDto createProductDto) throws Exception {
+    public ProductDto addProduct(CreateProductDto createProductDto) {
 
         if (!createProductDto.getEndTime().isAfter(createProductDto.getStartTime())) {
             throw new ProductBadRequestException("End time must be after start time!");
@@ -144,33 +144,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productRepo.delete(product);
-        return "Product deleted successfully!";
+        return "Product deleted successfully.";
     }
 
-    @Override
-    @Transactional
-    public void openScheduledAuctions() {
-        List<Product> toOpen = productRepo.findByProductStatusAndStartTimeLessThanEqual(ProductStatus.SCHEDULED, LocalDateTime.now());
-        toOpen.forEach(p -> p.setProductStatus(ProductStatus.OPEN));
-        productRepo.saveAll(toOpen);
-    }
-
-    @Override
-    @Transactional
-    public void closeExpiredAuctions() {
-        List<Product> toClose = productRepo.findByProductStatusAndEndTimeLessThanEqual(ProductStatus.OPEN, LocalDateTime.now());
-        List<Product> allToSave = new ArrayList<>();
-
-        toClose.forEach(p -> {
-            try {
-                p.setAuctionWinner(auctionWinnerService.createWinner(p));
-                p.setProductStatus(ProductStatus.CLOSED);
-                allToSave.add(p);
-            } catch (Exception e) {
-                System.err.println("Greška kod kreiranja pobjednika za proizvod id=" + p.getId() + ": " + e.getMessage());
-            }
-        });
-
-        productRepo.saveAll(allToSave);
-    }
 }
