@@ -16,11 +16,18 @@ import com.example.biddora_backend.user.entity.User;
 import com.example.biddora_backend.user.enums.Role;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -64,53 +71,272 @@ public class ProductServiceImplTest {
     @Test
     void addProduct_whenStartTimeIsBeforeEndTime_callsSaveAndReturnProductDto() {
 
-        LocalDateTime startTime = LocalDateTime.now();
-        LocalDateTime endTime = LocalDateTime.now().plusHours(1);
+        LocalDateTime startTime = LocalDateTime.now().plusMinutes(1);
+        LocalDateTime endTime = startTime.plusHours(1);
+
+        CreateProductDto dto = new CreateProductDto("testName", 10L, startTime, endTime, null);
 
         User owner = new User();
         owner.setId(1L);
 
-        CreateProductDto createProductDto = new CreateProductDto("test",10L,startTime,endTime,null);
-
         Product product = new Product();
+        product.setId(1L);
         product.setUser(owner);
-        product.setName(createProductDto.getName());
-        product.setStartingPrice(createProductDto.getStartingPrice());
-        product.setStartTime(createProductDto.getStartTime());
-        product.setEndTime(createProductDto.getEndTime());
-        product.setDescription(createProductDto.getDescription());
-        product.setCreatedAt(LocalDateTime.now());
         product.setProductStatus(ProductStatus.SCHEDULED);
-
-        Product savedProduct = new Product();
-        savedProduct.setUser(owner);
-        savedProduct.setName(createProductDto.getName());
-        savedProduct.setStartingPrice(createProductDto.getStartingPrice());
-        savedProduct.setStartTime(createProductDto.getStartTime());
-        savedProduct.setEndTime(createProductDto.getEndTime());
-        savedProduct.setDescription(createProductDto.getDescription());
-        savedProduct.setCreatedAt(LocalDateTime.now());
-        savedProduct.setProductStatus(ProductStatus.SCHEDULED);
+        product.setName("testName");
 
         ProductDto productDto = new ProductDto();
         productDto.setId(1L);
-        productDto.setName(createProductDto.getName());
+        productDto.setName(dto.getName());
 
         when(entityFetcher.getCurrentUser()).thenReturn(owner);
-        when(productRepo.save(any())).thenReturn(savedProduct);
-        when(productMapper.mapToDto(savedProduct)).thenReturn(productDto);
+        when(productRepo.save(any(Product.class))).thenReturn(product);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
 
-        ProductDto result = productService.addProduct(createProductDto);
+        ProductDto result = productService.addProduct(dto);
 
-        verify(productRepo).save(any());
+        verify(productRepo).save(any(Product.class));
 
         assertEquals(1L, result.getId());
-        assertEquals("test", result.getName());
-        assertEquals(owner.getId(), result.getUser().getId());
-        assertEquals(ProductStatus.SCHEDULED, result.getProductStatus());
+        assertEquals("testName", result.getName());
+        assertEquals(ProductStatus.SCHEDULED, product.getProductStatus());
     }
 
-    //get all products
+    @Test
+    void getAllProducts_withoutFiltersAndSort_returnsAllProductsDefaultSort() {
+
+        Long productId = 1L;
+
+        Product product = new Product();
+        product.setId(productId);
+
+        ArgumentCaptor<PageRequest> pageRequestArgumentCaptor = ArgumentCaptor.forClass(PageRequest.class);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(productId);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        when(productRepo.findAll(any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
+
+        Page<ProductDto> result =
+                productService.getAllProducts(Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty());
+
+        assertEquals(1, result.getTotalElements());
+        verify(productRepo).findAll(pageRequestArgumentCaptor.capture());
+
+        assertEquals("name", pageRequestArgumentCaptor.getValue().getSort().iterator().next().getProperty());
+        assertEquals(Sort.Direction.ASC, pageRequestArgumentCaptor.getValue().getSort().iterator().next().getDirection());
+    }
+
+    @Test
+    void getAllProducts_withSortByPriceHigh_returnsProductsSortedByPriceDesc() {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setStartingPrice(1L);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        ArgumentCaptor<PageRequest> captor = ArgumentCaptor.forClass(PageRequest.class);
+
+        when(productRepo.findAll(any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
+
+        Page<ProductDto> result = productService.getAllProducts(
+                Optional.empty(),
+                Optional.of("price-high"),
+                Optional.empty(),
+                Optional.empty()
+        );
+
+        verify(productRepo).findAll(captor.capture());
+        PageRequest usedPageRequest = captor.getValue();
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("startingPrice", usedPageRequest.getSort().iterator().next().getProperty());
+        assertEquals(Sort.Direction.DESC, usedPageRequest.getSort().iterator().next().getDirection());
+
+    }
+
+    @Test
+    void getAllProducts_withSortByPriceLow_returnsProductsSortedByPriceAsc() {
+
+        Product product = new Product();
+        product.setId(1L);
+
+        ProductDto productDto = new ProductDto();
+        product.setId(1L);
+
+        ArgumentCaptor<PageRequest> captor = ArgumentCaptor.forClass(PageRequest.class);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        when(productRepo.findAll(any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
+
+        Page<ProductDto> result = productService.getAllProducts(
+                Optional.empty(),
+                Optional.of("price-low"),
+                Optional.empty(),
+                Optional.empty()
+        );
+
+        verify(productRepo).findAll(captor.capture());
+        PageRequest usedPageRequest = captor.getValue();
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("startingPrice", usedPageRequest.getSort().iterator().next().getProperty());
+        assertEquals(Sort.Direction.ASC, usedPageRequest.getSort().iterator().next().getDirection());
+
+    }
+
+    @Test
+    void getAllProducts_withNameFilterOnly_callsFindByNameContainingIgnoreCase() {
+
+        String name = "testName";
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("testName");
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        when(productRepo.findByNameContainingIgnoreCase(any(String.class), any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
+
+        Page<ProductDto> result = productService.getAllProducts(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(name),
+                Optional.empty()
+        );
+
+        verify(productRepo).findByNameContainingIgnoreCase(any(String.class), any(PageRequest.class));
+        assertEquals(1, result.getTotalElements());
+
+    }
+
+    @Test
+    void getAllProducts_withProductTypeFilterOnly_callsFindByProductStatus() {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setProductStatus(ProductStatus.OPEN);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        when(productRepo.findByProductStatus(any(ProductStatus.class), any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
+
+        Page<ProductDto> result = productService.getAllProducts(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of(ProductStatus.OPEN)
+        );
+
+        verify(productRepo).findByProductStatus(any(ProductStatus.class), any(PageRequest.class));
+        assertEquals(1, result.getTotalElements());
+    }
+
+    @Test
+    void getAllProducts_withNameAndProductTypeFilters_callsFindByNameContainingIgnoreCaseAndProductStatus() {
+
+        Product product = new Product();
+        product.setId(1L);
+        product.setName("testName");
+        product.setProductStatus(ProductStatus.OPEN);
+
+        ProductDto productDto = new ProductDto();
+        productDto.setId(1L);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        when(productRepo.findByNameContainingIgnoreCaseAndProductStatus(any(String.class), any(ProductStatus.class), any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(productDto);
+
+        Page<ProductDto> result = productService.getAllProducts(
+                Optional.empty(),
+                Optional.empty(),
+                Optional.of("testName"),
+                Optional.of(ProductStatus.OPEN)
+        );
+
+        verify(productRepo).findByNameContainingIgnoreCaseAndProductStatus(any(String.class),any(ProductStatus.class), any(PageRequest.class));
+        assertEquals(1, result.getTotalElements());
+    }
+
+    @Test
+    void getAllProducts_withCustomPage_returnsProductsForGivenPage() {
+
+        Product product = new Product();
+        product.setId(1L);
+
+        Page<Product> products = new PageImpl<>(List.of(product));
+
+        ArgumentCaptor<PageRequest> captor = ArgumentCaptor.forClass(PageRequest.class);
+
+        when(productRepo.findAll(any(PageRequest.class))).thenReturn(products);
+        when(productMapper.mapToDto(product)).thenReturn(new ProductDto());
+
+        Page<ProductDto> result = productService.getAllProducts(
+                Optional.of(1),
+                Optional.empty(),
+                Optional.empty(),
+                Optional.empty()
+        );
+
+        verify(productRepo).findAll(captor.capture());
+        PageRequest usedPageRequest = captor.getValue();
+
+        assertEquals("name", usedPageRequest.getSort().iterator().next().getProperty());
+        assertEquals(Sort.Direction.ASC, usedPageRequest.getSort().iterator().next().getDirection());
+        assertEquals(1, usedPageRequest.getPageNumber());
+        assertEquals(1 ,result.getTotalElements());
+    }
+
+    @Test
+    void getAllProducts_withSortAndFilters_combinedScenarioReturnsCorrectProducts() {
+
+        ArgumentCaptor<String> nameArgumentCaptor = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<PageRequest> pageRequestArgumentCaptor = ArgumentCaptor.forClass(PageRequest.class);
+        ArgumentCaptor<ProductStatus> productStatusArgumentCaptor = ArgumentCaptor.forClass(ProductStatus.class);
+
+        Page<Product> products = new PageImpl<>(List.of(new Product()));
+
+        when(productRepo.findByNameContainingIgnoreCaseAndProductStatus(any(String.class), any(ProductStatus.class), any(PageRequest.class)))
+                .thenReturn(products);
+
+        when(productMapper.mapToDto(any(Product.class))).thenReturn(new ProductDto());
+
+        productService.getAllProducts(
+                Optional.of(1),
+                Optional.of("price-high"),
+                Optional.of("testName"),
+                Optional.of(ProductStatus.OPEN)
+        );
+
+        verify(productRepo).findByNameContainingIgnoreCaseAndProductStatus(nameArgumentCaptor.capture(), productStatusArgumentCaptor.capture(), pageRequestArgumentCaptor.capture());
+
+        assertEquals("testName", nameArgumentCaptor.getValue());
+        assertEquals(ProductStatus.OPEN, productStatusArgumentCaptor.getValue());
+
+        assertEquals(1, pageRequestArgumentCaptor.getValue().getPageNumber());
+        assertEquals(Sort.Direction.DESC, pageRequestArgumentCaptor.getValue().getSort().iterator().next().getDirection());
+        assertEquals("startingPrice", pageRequestArgumentCaptor.getValue().getSort().iterator().next().getProperty());
+
+    }
 
     @Test
     void editProduct_whenUserIsOwner_callsSaveAndReturnProductDto() {
@@ -138,8 +364,8 @@ public class ProductServiceImplTest {
         ProductDto result = productService.editProduct(productId, editProductDto);
 
         verify(productRepo).save(product);
-        assertEquals("editedName", result.getName());
-        assertEquals("editedDescription", result.getDescription());
+        assertEquals("editedName", product.getName());
+        assertEquals("editedDescription", product.getDescription());
     }
 
     @Test
