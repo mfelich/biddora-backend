@@ -1,6 +1,5 @@
 package com.example.biddora_backend.product;
 
-import com.example.biddora_backend.auction.service.AuctionWinnerService;
 import com.example.biddora_backend.common.exception.ProductAccessDeniedException;
 import com.example.biddora_backend.common.exception.ProductBadRequestException;
 import com.example.biddora_backend.common.util.EntityFetcher;
@@ -39,9 +38,6 @@ public class ProductServiceImplTest {
 
     @Mock
     ProductRepo productRepo;
-
-    @Mock
-    AuctionWinnerService auctionWinnerService;
 
     @Mock
     ProductMapper productMapper;
