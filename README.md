@@ -9,6 +9,7 @@ Biddora is a real-time auction backend platform that enables live bidding on pro
 - WebSocket
 - PostgreSQL, Spring Data JPA
 - Spring Doc OpenAPI (Swagger)
+- JUnit5 & Mockito
 - Docker, Maven
 
 ## Key Features
@@ -18,6 +19,7 @@ Biddora is a real-time auction backend platform that enables live bidding on pro
 - Bid validation
 - Custom exception handling through GlobalExceptionHandler
 - Rating and Favorite system
+- Unit testing with JUnit 5 and Mockito
 
 ## Installation & Setup 
 ```bash
