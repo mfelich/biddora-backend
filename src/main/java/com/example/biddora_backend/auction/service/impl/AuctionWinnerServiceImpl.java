@@ -3,6 +3,7 @@ package com.example.biddora_backend.auction.service.impl;
 import com.example.biddora_backend.auction.dto.AuctionWinnerDto;
 import com.example.biddora_backend.auction.entity.AuctionWinner;
 import com.example.biddora_backend.bid.entity.Bid;
+import com.example.biddora_backend.common.exception.ResourceNotFoundException;
 import com.example.biddora_backend.product.entity.Product;
 import com.example.biddora_backend.product.enums.ProductStatus;
 import com.example.biddora_backend.common.exception.BidException;
@@ -26,39 +27,42 @@ public class AuctionWinnerServiceImpl implements AuctionWinnerService {
     private final AuctionWinnerMapper auctionWinnerMapper;
     private final EntityFetcher entityFetcher;
 
-    @Override
-    @Transactional
-    public AuctionWinner createWinner(Product product) {
+        @Override
+        @Transactional
+        public AuctionWinner createWinner(Product product) {
 
-        Optional<Bid> winningBidOpt = bidRepo.findTopByProductOrderByAmountDesc(product);
+            Optional<Bid> winningBidOpt = bidRepo.findTopByProductOrderByAmountDesc(product);
 
-        if (winningBidOpt.isEmpty()) {
-            throw new BidException("There are no bids for the product with ID: " + product.getId());
+            if (winningBidOpt.isEmpty()) {
+                throw new BidException("There are no bids for the product with ID: " + product.getId());
+            }
+
+            Bid winningBid = winningBidOpt.get();
+
+            AuctionWinner auctionWinner = new AuctionWinner();
+            auctionWinner.setUser(winningBid.getUser());
+            auctionWinner.setProduct(product);
+            auctionWinner.setAmount(winningBid.getAmount());
+
+            return auctionWinnerRepo.save(auctionWinner);
+
         }
 
-        Bid winningBid = winningBidOpt.get();
+        @Override
+        public AuctionWinnerDto getAuctionWinner(Long productId) {
 
-        AuctionWinner auctionWinner = new AuctionWinner();
-        auctionWinner.setUser(winningBid.getUser());
-        auctionWinner.setProduct(product);
-        auctionWinner.setAmount(winningBid.getAmount());
+            Product product = entityFetcher.getProductById(productId);
 
-        AuctionWinner savedAuctionWinner = auctionWinnerRepo.save(auctionWinner);
+            if (!product.getProductStatus().equals(ProductStatus.CLOSED)) {
+                throw new BidException("The auction for this product has not ended yet.");
+            }
 
-        return savedAuctionWinner;
-    }
+            Optional<AuctionWinner> auctionWinner = auctionWinnerRepo.findByProductId(productId);
 
-    @Override
-    public AuctionWinnerDto getAuctionWinner(Long productId) {
+            if (auctionWinner.isEmpty()) {
+                throw new ResourceNotFoundException("Winner not found.");
+            }
 
-        Product product = entityFetcher.getProductById(productId);
-
-        if (!product.getProductStatus().equals(ProductStatus.CLOSED)) {
-            throw new BidException("The auction for this product has not ended yet.");
+            return auctionWinnerMapper.mapToDto(auctionWinner.get());
         }
-
-        AuctionWinner auctionWinner = auctionWinnerRepo.findByProductId(productId);
-
-        return auctionWinnerMapper.mapToDto(auctionWinner);
-    }
 }
