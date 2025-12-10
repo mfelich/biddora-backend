@@ -11,18 +11,19 @@ import com.example.biddora_backend.common.exception.ProductBadRequestException;
 import com.example.biddora_backend.common.exception.ProductAccessDeniedException;
 import com.example.biddora_backend.product.mapper.ProductMapper;
 import com.example.biddora_backend.product.repo.ProductRepo;
-import com.example.biddora_backend.auction.service.AuctionWinnerService;
 import com.example.biddora_backend.product.service.ProductService;
 import com.example.biddora_backend.common.util.EntityFetcher;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,12 +33,12 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepo productRepo;
-    private final AuctionWinnerService auctionWinnerService;
     private final ProductMapper productMapper;
     private final EntityFetcher entityFetcher;
 
     @Override
     @Transactional
+    @CachePut(value = "products", key = "#result.id()")
     public ProductDto addProduct(CreateProductDto createProductDto) {
 
         if (!createProductDto.getEndTime().isAfter(createProductDto.getStartTime())) {
@@ -62,6 +63,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "#productId")
     public ProductDto getProductById(Long productId) {
         Product product = entityFetcher.getProductById(productId);
 
@@ -117,6 +119,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CachePut(value = "products", key = "#productId")
     public ProductDto editProduct(Long productId, EditProductDto editProductDto) {
         User user = entityFetcher.getCurrentUser();
         Product product = entityFetcher.getProductById(productId);
@@ -134,6 +137,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", key = "#productId")
     public String deleteProduct(Long productId) {
         User user = entityFetcher.getCurrentUser();
         Product product = entityFetcher.getProductById(productId);
